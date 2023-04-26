@@ -2,3 +2,6 @@
 /cmake-build-debug/
  .cache/
  build/
+ .idea/
+ .cmake/
+ 

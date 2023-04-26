@@ -3,7 +3,10 @@
 //
 
 #include "C4_game_engine.h"
-#include "colours.h"
+#include <pthread.h>
+#include <stdlib.h>
+
+
 
 short** create_board(){
     //allocate memory for the board and initialize values to 0
@@ -30,16 +33,18 @@ void print_board(short** board){
     for (int i = 0; i < BOARD_HEIGHT; ++i) {
         for (int j = 0; j < BOARD_WIDTH; ++j) {
             if(board[i][j] == HUMAN)
-                colourChange(RED);
+                printf("H  ");
+                //colourChange(RED);
             else if(board[i][j] == AI)
-                colourChange(YELLOW);
-            else colourChange(BLUE);
+                printf("X  ");
+                //colourChange(YELLOW);
+            else printf("O  ");//colourChange(BLUE);
 
-            printf("O  ");
+            //printf("0  ")
         }
         printf("\n");
     }
-    colourChange(CYAN);
+    //colourChange(CYAN);
 }
 
 short is_legal_move(short** board, short column){
@@ -321,13 +326,8 @@ struct minimax_return minimax(short** board, short depth, long long alpha, long 
     return best_move;
 }
 
-short generate_move(short** board, short depth, long long alpha, long long beta, short player){
-    struct minimax_return move_table[7];
-    short** board_copy;
-    for (short i = 0; i < BOARD_WIDTH; ++i) {
-        board_copy = copy_board(board);
-        if(place_chip(board, i, player) != 0)
-        move_table[i] = minimax(board, depth - 1, alpha, beta, player);
-    }
+void* minimax_mt(void* args){ //receive general args in separate execution thread
+    MIN_ARGS* ret_args = (MIN_ARGS*)args;
+    ret_args->score = minimax(ret_args->board, ret_args->depth, ret_args->alpha, ret_args->beta, ret_args->player).score;
+    pthread_exit(NULL);
 }
-

@@ -5,12 +5,13 @@
 #ifndef CONNECT4_C4_GAME_ENGINE_H
 #define CONNECT4_C4_GAME_ENGINE_H
 
+#include <colours.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <conio.h>
 #include <math.h>
-#include "C4_game_engine.h"
+#include <string.h>
+#include <pthread.h>
 
 #define BOARD_WIDTH 7
 #define BOARD_HEIGHT 6
@@ -19,16 +20,23 @@
 #define HUMAN 1
 #define EMPTY 0
 
-#define YELLOW 6
-#define BLUE 1
-#define RED 4
-
+#define max(a, b) (a > b ? a : b)
+#define min(a, b) (a < b ? a : b)
 
 
 struct minimax_return{
     short column;
     long long score;
 };
+
+typedef struct MIN_ARGS{
+    short** board;
+    short depth;
+    long long alpha;
+    long long beta;
+    short player;
+    long long score;
+}MIN_ARGS;
 
 //function prototypes
 
@@ -63,5 +71,7 @@ short** copy_board(short** board);
 void free_board(short** board);
 
 struct minimax_return minimax(short** board, short depth, long long alpha, long long beta, short player);
+
+void* minimax_mt(void* minimax_args);
 
 #endif //CONNECT4_C4_GAME_ENGINE_H
